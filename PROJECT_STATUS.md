@@ -54,6 +54,14 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - 구현은 Claude worker가 담당합니다.
 - PM은 target repo 읽기, git status/diff 확인, 테스트 실행, 작업 배정, 결과 리뷰, 보고만 담당합니다.
 
+## Git / Review 운영
+
+- Claude worker 또는 모델별로 branch/worktree를 분리합니다.
+- worker branch를 `main`에 직접 merge하지 않습니다.
+- PHASE 또는 worker 단위 작업이 끝나면 GitHub Pull Request를 `main` 대상으로 엽니다.
+- 택민님은 각 PR을 보고 PHASE 마무리/merge 여부를 확인합니다.
+- PM은 PR 전 diff/test/scope를 먼저 검토하고, 필요하면 Claude worker에게 수정을 재지시합니다.
+
 ## 현재 모니터링
 
 OpenClaw cron job:
@@ -113,9 +121,9 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 
 ## 다음 PM 작업
 
-1. Claude-A에게 docs contract 정리 작업을 배정합니다.
-2. Claude-B에게 Question domain/Flyway/API TDD 작업을 배정합니다.
-3. Claude-C에게 Vite React TypeScript scaffold/auth/question UI 작업을 배정합니다.
-4. Claude-D는 QA reviewer로 두고 worker 결과를 검증합니다.
+1. Claude-A에게 docs contract 정리 작업을 배정하고 `phase-01/docs-contract` branch에서 PR 준비합니다.
+2. Claude-B에게 Question domain/Flyway/API TDD 작업을 배정하고 `phase-01/backend-question` branch에서 PR 준비합니다.
+3. Claude-C에게 Vite React TypeScript scaffold/auth/question UI 작업을 배정하고 `phase-01/frontend-react` branch에서 PR 준비합니다.
+4. Claude-D는 QA reviewer로 두고 worker 결과와 PR merge gate를 검증합니다.
 5. PM 로그는 한국어 우선으로 작성하고 GitHub에 푸시합니다.
 6. Claude token/budget 제한이 감지되면 당일 작업/내일 작업과 함께 보고합니다.

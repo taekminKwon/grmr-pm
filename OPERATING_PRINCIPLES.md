@@ -115,3 +115,12 @@ Every day, maintain `daily/YYYY-MM-DD.md` with:
 
 Commit the daily log in this repository.
 
+## Git / Review Policy
+
+Taekmin's latest rule, received 2026-08-07:
+
+- Use separate branches/worktrees per Claude worker or model.
+- Do not merge worker branches directly into `main`.
+- When a worker/phase is ready, open a GitHub Pull Request targeting `main`.
+- Taekmin reviews phase completion through those PRs.
+- PM may review, test, request fixes, and prepare PRs, but final phase acceptance belongs to Taekmin.
