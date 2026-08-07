@@ -1,6 +1,6 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-07 16:44 KST
+Last updated: 2026-08-07 17:08 KST
 
 ## 현재 PHASE
 
@@ -68,8 +68,11 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - Milestone: `PHASE 1 - Question Vertical Slice`
 - Issues: #1-#10
 - Labels: `phase:1`, `type:micro-task`, `area:*`, `worker:*`, `status:*`
-- GitHub Projects board는 token에 `project` scope가 없어 아직 생성하지 못했습니다.
-- 후속: `gh auth refresh -h github.com -s project` device auth 완료 후 Project board를 생성하고 issues를 board에 추가합니다.
+- GitHub Projects board 생성 완료: `ewha-grmr PM Board`
+- Project URL: `https://github.com/users/taekminKwon/projects/1`
+- Issues #1-#10을 board에 모두 추가했습니다.
+- 현재 status는 전부 `Todo`입니다.
+- 실제 Claude micro task를 시작할 때 해당 issue를 `In Progress`로 옮기고, worker PR 검토가 끝나면 `Done`으로 전환합니다.
 
 ## Micro Prompt / Commit 운영
 
