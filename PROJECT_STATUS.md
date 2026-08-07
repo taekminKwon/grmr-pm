@@ -1,6 +1,6 @@
 # ewha-grmr Project Status
 
-Last updated: 2026-08-07 16:11 KST
+Last updated: 2026-08-07 16:22 KST
 
 ## Current Phase
 
@@ -13,7 +13,7 @@ PHASE 1 has not been approved yet.
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
 - PM Discord channel: `1535183582727901195`
-- PM Discord thread/session fallback: `agent:main:subagent:fdfa3f61-f37e-437a-9cfc-15a9bd081d70`
+- Current PM Discord daily thread: `1535186299797901343` (`2026-08-07 ewha-grmr PM`)
 - Claude CLI: `/Users/taekmin/.local/bin/claude`
 - Claude version: `2.1.224`
 - Active Claude Code session:
@@ -62,7 +62,7 @@ Daily PM report cron job:
 - Schedule: 23:45 Asia/Seoul daily
 - Purpose: update daily PM log, commit it in this repository, and report summary to PM Discord channel `1535183582727901195`.
 
-Note: Discord daily thread creation is not currently exposed through the available tool schema. Until a thread creation tool or daily thread ID is available, reports are sent to the PM channel directly.
+Note: PM Discord channel `1535183582727901195` is now allowlisted in OpenClaw config. Daily PM threads can be created with `openclaw message thread create`.
 
 ## Available APIs / Interfaces
 
@@ -93,11 +93,12 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 
 ## Latest Claude Worker Check
 
-2026-08-07 16:11 KST:
+2026-08-07 16:22 KST:
 
 - `claude agents --json --all --cwd /Users/taekmin/Desktop/ewha-grmr` reported one interactive session, `document-login-api-jwt`, status `idle`.
 - Target repo has uncommitted changes that appear to be Claude worker output and need PM review before acceptance.
 - No direct target project files were modified by PM.
+- PM Discord channel allowlist was updated and today's PM thread was created.
 
 ## Next PM Actions
 
