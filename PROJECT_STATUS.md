@@ -1,10 +1,10 @@
 # ewha-grmr Project Status
 
-Last updated: 2026-08-07 16:22 KST
+Last updated: 2026-08-07 16:30 KST
 
 ## Current Phase
 
-Pre-PHASE 1: Repository and document analysis.
+Pre-PHASE 1: Contract and implementation-state audit.
 
 PHASE 1 has not been approved yet.
 
@@ -12,6 +12,7 @@ PHASE 1 has not been approved yet.
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
+- PM log remote: `https://github.com/taekminKwon/ewha-grmr-pm`
 - PM Discord channel: `1535183582727901195`
 - Current PM Discord daily thread: `1535186299797901343` (`2026-08-07 ewha-grmr PM`)
 - Claude CLI: `/Users/taekmin/.local/bin/claude`
@@ -93,16 +94,18 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 
 ## Latest Claude Worker Check
 
-2026-08-07 16:22 KST:
+2026-08-07 16:30 KST:
 
-- `claude agents --json --all --cwd /Users/taekmin/Desktop/ewha-grmr` reported one interactive session, `document-login-api-jwt`, status `idle`.
-- Target repo has uncommitted changes that appear to be Claude worker output and need PM review before acceptance.
+- Last target project commit: `d2ba68d Docs : 코드 컨벤션 개정 (도메인 우선 구조, 로그인 API 반영)`.
+- Recent history shows auth/member implementation already exists (`d895ba9 Feat : 로그인/토큰 재발급/로그아웃 API 구현 (JWT + Spring Security, TDD)`), so PHASE 1 should not be treated as a blank backend setup phase.
+- Current target repo status: only untracked `data/` state-store files.
+- Backend unit tests: `./gradlew test` PASS.
 - No direct target project files were modified by PM.
-- PM Discord channel allowlist was updated and today's PM thread was created.
+- PM log repo was pushed to GitHub remote.
 
 ## Next PM Actions
 
-1. Present initial PHASE plan for approval.
-2. If PHASE 1 approved, spawn/assign Claude workers via branches/worktrees.
+1. Present revised PHASE plan for approval based on existing auth/member implementation.
+2. If PHASE 1 approved, assign Claude workers via branches/worktrees.
 3. Keep daily log updated in this PM repository.
 4. Report when Claude token/budget exhaustion or limit condition is detected.
