@@ -64,6 +64,17 @@ Taekmin's rule, received 2026-08-07:
 - After each micro task, PM reviews diff/scope/tests before the next task.
 - Use multiple sequential prompts instead of one broad prompt when work can be split.
 
+## Claude Budget Strategy
+
+Taekmin's rule, received 2026-08-07:
+
+- Use the provided Claude token budget productively, but do not waste it on vague or oversized prompts.
+- Keep the operating style as micro task + small commit.
+- Usually run 1-2 Claude workers at a time; the 4-pane tmux board is for visibility/control, not a requirement to keep all workers burning tokens.
+- If useful bounded work remains and Claude is available, continue assigning the next small task rather than leaving the daily budget idle.
+- Use reviewer Claude only when the change risk justifies it.
+- When token/limit exhaustion is detected, stop dependent worker assignment and report/log the day's work plus tomorrow's continuation plan.
+
 ## Claude Worker Return Format
 
 STATUS:

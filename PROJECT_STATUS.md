@@ -71,6 +71,14 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - 각 task 완료 후 PM이 diff/scope/test를 확인하고, 통과한 단위만 작은 commit으로 남깁니다.
 - 컨텍스트가 커지면 새 micro prompt로 분리합니다.
 
+## Claude Budget 운영
+
+- 22달러 플랜 기준으로 4개 worker 상시 풀가동은 피합니다.
+- 기본은 1-2개 Claude worker를 micro task 단위로 순차 운용합니다.
+- 제공되는 token budget은 가능하면 생산적으로 소진하되, 중복 분석/큰 프롬프트/불필요한 reviewer 투입으로 낭비하지 않습니다.
+- 유용한 bounded task가 남아 있고 Claude가 사용 가능하면 다음 작은 task를 이어서 배정합니다.
+- token/limit exhaustion이 감지되면 해당 model/session 의존 작업을 멈추고 PM thread/daily log에 오늘 완료/내일 진행을 보고합니다.
+
 ## 현재 모니터링
 
 OpenClaw cron job:
