@@ -1,6 +1,6 @@
 # ewha-grmr Project Status
 
-Last updated: 2026-08-07 15:56 KST
+Last updated: 2026-08-07 16:11 KST
 
 ## Current Phase
 
@@ -18,7 +18,8 @@ PHASE 1 has not been approved yet.
 - Active Claude Code session:
   - cwd: `/Users/taekmin/Desktop/ewha-grmr`
   - sessionId: `bf80e47a-1d7c-4f58-b48b-2231eb34b2a6`
-  - status: busy at last check
+  - name: `document-login-api-jwt`
+  - status: idle at last check
 
 ## Project Summary
 
@@ -86,6 +87,14 @@ Daily PM report cron job:
 - Background tasks: `~/.claude/tasks/`
 
 Note: no direct Claude "remaining token quota" API has been identified. Token exhaustion reporting must be inferred from Claude limit messages, session status, and logs unless another API becomes available.
+
+## Latest Claude Worker Check
+
+2026-08-07 16:11 KST:
+
+- `claude agents --json --all --cwd /Users/taekmin/Desktop/ewha-grmr` reported one interactive session, `document-login-api-jwt`, status `idle`.
+- Target repo has uncommitted changes that appear to be Claude worker output and need PM review before acceptance.
+- No direct target project files were modified by PM.
 
 ## Next PM Actions
 
