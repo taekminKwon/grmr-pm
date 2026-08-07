@@ -62,6 +62,15 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - 택민님은 각 PR을 보고 PHASE 마무리/merge 여부를 확인합니다.
 - PM은 PR 전 diff/test/scope를 먼저 검토하고, 필요하면 Claude worker에게 수정을 재지시합니다.
 
+## GitHub 작업 추적
+
+- `ewha-grmr` repo에 PHASE 1 milestone과 micro-task issues를 생성했습니다.
+- Milestone: `PHASE 1 - Question Vertical Slice`
+- Issues: #1-#10
+- Labels: `phase:1`, `type:micro-task`, `area:*`, `worker:*`, `status:*`
+- GitHub Projects board는 token에 `project` scope가 없어 아직 생성하지 못했습니다.
+- 후속: `gh auth refresh -h github.com -s project` device auth 완료 후 Project board를 생성하고 issues를 board에 추가합니다.
+
 ## Micro Prompt / Commit 운영
 
 - Claude에게 한 번에 큰 PHASE 전체를 맡기지 않습니다.
@@ -153,5 +162,6 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 2. Claude-B에게 Question domain/Flyway/API TDD 작업을 endpoint/test 단위로 쪼개 배정하고 `phase-01/backend-question` branch에서 PR 준비합니다.
 3. Claude-C에게 Vite React TypeScript scaffold/auth/question UI 작업을 component 단위로 쪼개 배정하고 `phase-01/frontend-react` branch에서 PR 준비합니다.
 4. Claude-D는 QA reviewer로 두고 worker 결과와 PR merge gate를 검증합니다.
-5. PM 로그는 한국어 우선으로 작성하고 GitHub에 푸시합니다.
-6. Claude token/budget 제한이 감지되면 당일 작업/내일 작업과 함께 보고합니다.
+5. GitHub Projects scope 갱신 후 Project board를 생성합니다.
+6. PM 로그는 한국어 우선으로 작성하고 GitHub에 푸시합니다.
+7. Claude token/budget 제한이 감지되면 당일 작업/내일 작업과 함께 보고합니다.
