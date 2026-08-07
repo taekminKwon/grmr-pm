@@ -12,7 +12,8 @@ PHASE 1 has not been approved yet.
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
-- PM Discord thread/session: `agent:main:subagent:fdfa3f61-f37e-437a-9cfc-15a9bd081d70`
+- PM Discord channel: `1535183582727901195`
+- PM Discord thread/session fallback: `agent:main:subagent:fdfa3f61-f37e-437a-9cfc-15a9bd081d70`
 - Claude CLI: `/Users/taekmin/.local/bin/claude`
 - Claude version: `2.1.224`
 - Active Claude Code session:
@@ -59,7 +60,9 @@ Daily PM report cron job:
 
 - Job ID: `e53603b0-f1e9-4e57-ab10-9c5f1411abc3`
 - Schedule: 23:45 Asia/Seoul daily
-- Purpose: update daily PM log, commit it in this repository, and report summary to the PM Discord thread/session.
+- Purpose: update daily PM log, commit it in this repository, and report summary to PM Discord channel `1535183582727901195`.
+
+Note: Discord daily thread creation is not currently exposed through the available tool schema. Until a thread creation tool or daily thread ID is available, reports are sent to the PM channel directly.
 
 ## Available APIs / Interfaces
 
