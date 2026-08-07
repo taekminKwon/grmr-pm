@@ -1,20 +1,26 @@
-# ewha-grmr Project Status
+# ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-07 16:30 KST
+Last updated: 2026-08-07 16:44 KST
 
-## Current Phase
+## 현재 PHASE
 
-Pre-PHASE 1: Contract and implementation-state audit.
+PHASE 1 준비: 계약 정합성 감사 완료, 첫 vertical slice 작업 분배 준비.
 
-PHASE 1 has not been approved yet.
+사용자는 iTerm/tmux 기반 Claude worker 운영 방식과 PM 로그 한국어 운영을 승인했습니다. 첫 Claude worker 라운드는 읽기 전용 감사/계획으로 실행 완료했습니다.
 
-## Current State
+## 현재 상태
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
 - PM log remote: `https://github.com/taekminKwon/ewha-grmr-pm`
 - PM Discord channel: `1535183582727901195`
 - Current PM Discord daily thread: `1535186299797901343` (`2026-08-07 ewha-grmr PM`)
+- tmux session: `ewha-grmr-workers`
+- worker worktrees:
+  - `phase-01/docs-contract` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/docs-contract`
+  - `phase-01/backend-question` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/backend-question`
+  - `phase-01/frontend-react` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/frontend-react`
+  - `phase-01/qa-review` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/qa-review`
 - Claude CLI: `/Users/taekmin/.local/bin/claude`
 - Claude version: `2.1.224`
 - Active Claude Code session:
@@ -23,7 +29,7 @@ PHASE 1 has not been approved yet.
   - name: `document-login-api-jwt`
   - status: idle at last check
 
-## Project Summary
+## 프로젝트 요약
 
 Grammar Lab (`grmr`) is an English grammar practice and learning management service.
 
@@ -32,7 +38,7 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - Backend: Java 21, Spring Boot 4.1.0, Gradle, JPA, Flyway, PostgreSQL.
 - Frontend: React planned.
 
-## Known Document Risks
+## 알려진 문서/계약 리스크
 
 - `api-spec.md` and `api-spec-detail.md` still conflict on GPT generation response shape.
 - JWT/auth scope has grown, but backend dependencies may not yet match.
@@ -41,14 +47,14 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - Non-multiple-choice question types are mentioned but not fully specified for scoring/UI.
 - Question status transition needs explicit rules for `DRAFT -> IN_USE`.
 
-## PM Constraints
+## PM 제약
 
-- PM must not edit target project files directly.
-- PM must not create PM artifacts inside the target project repository.
-- Implementation belongs to Claude workers.
-- PM may read target repo, inspect git status/diff, run tests, assign work, review results, and report.
+- PM은 target project 파일을 직접 수정하지 않습니다.
+- PM 문서, 계획, 메모는 target project repository 안에 만들지 않습니다.
+- 구현은 Claude worker가 담당합니다.
+- PM은 target repo 읽기, git status/diff 확인, 테스트 실행, 작업 배정, 결과 리뷰, 보고만 담당합니다.
 
-## Current Monitoring
+## 현재 모니터링
 
 OpenClaw cron job:
 
@@ -65,7 +71,7 @@ Daily PM report cron job:
 
 Note: PM Discord channel `1535183582727901195` is now allowlisted in OpenClaw config. Daily PM threads can be created with `openclaw message thread create`.
 
-## Available APIs / Interfaces
+## 사용 가능한 API / 인터페이스
 
 ### OpenClaw
 
@@ -92,9 +98,9 @@ Note: PM Discord channel `1535183582727901195` is now allowlisted in OpenClaw co
 
 Note: no direct Claude "remaining token quota" API has been identified. Token exhaustion reporting must be inferred from Claude limit messages, session status, and logs unless another API becomes available.
 
-## Latest Claude Worker Check
+## 최근 Claude / 프로젝트 점검
 
-2026-08-07 16:30 KST:
+2026-08-07 16:44 KST:
 
 - Last target project commit: `d2ba68d Docs : 코드 컨벤션 개정 (도메인 우선 구조, 로그인 API 반영)`.
 - Recent history shows auth/member implementation already exists (`d895ba9 Feat : 로그인/토큰 재발급/로그아웃 API 구현 (JWT + Spring Security, TDD)`), so PHASE 1 should not be treated as a blank backend setup phase.
@@ -102,10 +108,14 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 - Backend unit tests: `./gradlew test` PASS.
 - No direct target project files were modified by PM.
 - PM log repo was pushed to GitHub remote.
+- Claude-A/B/C/D read-only audit completed. Raw logs are in `state/`, Korean summary is in `reports/2026-08-07-phase01-audit-summary.md`.
+- Worker worktrees are clean; target project still has only untracked `data/`.
 
-## Next PM Actions
+## 다음 PM 작업
 
-1. Present revised PHASE plan for approval based on existing auth/member implementation.
-2. If PHASE 1 approved, assign Claude workers via branches/worktrees.
-3. Keep daily log updated in this PM repository.
-4. Report when Claude token/budget exhaustion or limit condition is detected.
+1. Claude-A에게 docs contract 정리 작업을 배정합니다.
+2. Claude-B에게 Question domain/Flyway/API TDD 작업을 배정합니다.
+3. Claude-C에게 Vite React TypeScript scaffold/auth/question UI 작업을 배정합니다.
+4. Claude-D는 QA reviewer로 두고 worker 결과를 검증합니다.
+5. PM 로그는 한국어 우선으로 작성하고 GitHub에 푸시합니다.
+6. Claude token/budget 제한이 감지되면 당일 작업/내일 작업과 함께 보고합니다.

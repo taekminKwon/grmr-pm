@@ -1,0 +1,90 @@
+Given the tools actually available to me here don't include Write or ExitPlanMode (consistent with this role's "read-only plan" constraint), I'll deliver the QA plan directly as text in the exact requested format.
+
+---
+
+STATUS:
+Inspected all 6 docs (`README.md`, `docs/feature-spec.md`, `docs/api-spec.md`, `docs/api-spec-detail.md`, `docs/code-convention.md`, `docs/git-convention.md`), the full `backend/src/test/java` suite (6 test classes), `backend/build.gradle`, and `backend/src/main/java` source tree. Key findings:
+
+- **No PHASE 1 / roadmap doc exists anywhere.** Scope for "Phase 1" is only inferable from the branch name `phase-01/backend-question` (plus sibling branches `phase-01/docs-contract`, `phase-01/frontend-react`, `phase-01/qa-review`, all currently identical to `main`). This needs confirmation from Kalin, not assumption.
+- The domain is called **문제 (Question/grammar-exercise)**, not "질문" — fully specified functionally (`feature-spec.md` §2) and at the API level (`api-spec.md` + `api-spec-detail.md`), but **zero implementation exists** (`git grep` for "question" in `src/main` hits only one line: the `SecurityConfig` route reservation).
+- `SecurityConfig` already restricts `/api/questions/**` to `hasRole("ADMIN")` — this pre-existing rule is the biggest regression surface and the main new-coverage target.
+- Existing auth/member test suite (`AuthServiceTest`, `JwtTokenProviderTest`, `RedisRefreshTokenRepositoryTest`, `AuthControllerTest`, `MemberTest`) gives a clear, reusable pattern: Mockito unit tests for services, `@WebMvcTest` + explicit `@Import` of security/exception beans for controllers, `@Tag("integration")` + Testcontainers for Redis, H2 (`MODE=PostgreSQL`) for the default `test` task, AssertJ, no `@DisplayName` (English `method_condition_expectedOutcome` naming instead).
+- **No CI pipeline, no coverage gate, no documented merge/PR/integration-branch policy** exist anywhere in the repo. `git-convention.md` explicitly states no branch strategy has been defined yet.
+- No Bean Validation dependency, no `BaseTimeEntity`/JPA auditing, no generic `ApiResponse<T>` envelope, no `@DataJpaTest` example yet — a Question slice would be first to need several of these.
+
+ACCEPTANCE_CRITERIA:
+(Derived from `feature-spec.md` §2 관리자 기능 → 문제 관리, and `api-spec-detail.md`'s Question section — since no PHASE 1 scope doc exists, these are the full documented feature set; Kalin should confirm whether all of it or a subset is in scope for this phase.)
+
+1. All 7 documented endpoints implemented and match the spec's request/response field names exactly:
+   - `GET /api/questions` (filters: `category`, `type`, `level`, `status`, `keyword`, `page`, `size`; paginated envelope `{content, page, size, totalElements, totalPages}`; list items omit `choices`/`answer`/`explanation`)
+   - `GET /api/questions/{id}` (full detail incl. `choices`/`answer`/`explanation`; 404 on missing)
+   - `POST /api/questions` (direct create; always persisted with `status: 초안` regardless of input)
+   - `PATCH /api/questions/{id}` (partial update)
+   - `PATCH /api/questions/{id}/status` (초안 ↔ 사용 중 ↔ 사용 중지 transitions; invalid transitions, e.g. 초안→사용 중지 directly, rejected)
+   - `POST /api/questions/generate` (GPT-drafted questions, **not persisted**, returned for review)
+   - `POST /api/questions/generate/save` (bulk-persist reviewed drafts as `초안`)
+2. Enum fields validated against the documented value sets: `type` ∈ {객관식, 빈칸, 오류 찾기}, `level` ∈ {기초, 보통, 심화}, `status` ∈ {초안, 사용 중, 사용 중지}; `category` values are open-ended grammar topics (need to confirm with Kalin whether category is a free string or a constrained enum/lookup table).
+3. `POST /api/questions` rejects an answer not present in `choices` (400 `INVALID_QUESTION`) for 객관식-type questions.
+4. Status-transition rules are enforced and errors return 409 `INVALID_STATUS_TRANSITION` — full transition graph needs explicit confirmation (only "초안 cannot go directly to 사용 중지" is documented; the rest is implied, not written down).
+5. Error responses uniformly use the existing `ErrorResponse{code, message}` shape via `GlobalExceptionHandler`, with codes: `QUESTION_NOT_FOUND` (404), `INVALID_QUESTION` (400), `INVALID_STATUS_TRANSITION` (409), `GPT_GENERATION_FAILED` (502).
+6. `/api/questions/**` requires `ROLE_ADMIN`: no/invalid token → 401; valid `ROLE_STUDENT` token → 403; valid `ROLE_ADMIN` token → success. This must hold for every one of the 7 endpoints, not just one representative case.
+7. Domain model follows `code-convention.md`'s non-anemic pattern: status transitions/validation live on the `Question` entity (e.g. `activate()`, `disable()`), not scattered in the service layer.
+8. Package layout matches the documented target (`question/domain`, `application`, `presentation`, `infrastructure`) and respects the dependency rule (`presentation → application → domain ← infrastructure`; cross-domain references touch only `domain`, never another domain's `application`/`presentation`).
+9. No regression to existing Auth/Member behavior or tests.
+
+TEST_PLAN:
+
+*Unit (mirror `AuthServiceTest`/`JwtTokenProviderTest`/`MemberTest` style — plain JUnit5 + Mockito + AssertJ, `method_condition_expectedOutcome` naming, no `@DisplayName`):*
+- `QuestionTest` — entity transition rules (`activate()`/`disable()` incl. invalid-transition exception), any `isCorrect()`-style domain logic.
+- `QuestionServiceTest` — create (forces `초안`, validates answer-in-choices), partial update, status change (delegates to entity, maps entity exception → `INVALID_STATUS_TRANSITION`), filtered list, get-by-id (404 mapping).
+- `QuestionGenerationServiceTest` — mocked `GptQuestionClient`; success returns N drafts unpersisted; failure → `GPT_GENERATION_FAILED`; bulk-save persists list at `초안`.
+
+*Controller/slice (`@WebMvcTest(QuestionController.class)` + same `@Import` list as `AuthControllerTest`: `SecurityConfig`, `JwtAuthenticationFilter`, `JsonAuthenticationEntryPoint`, `JsonAccessDeniedHandler`, `GlobalExceptionHandler`, `@MockitoBean` service):*
+- Happy-path + error-path coverage per endpoint per the acceptance criteria above (200/201/400/404/409/502 as applicable), including the list-response field-exclusion check and the pagination envelope shape.
+- **Full authZ matrix per endpoint**: no-token→401, STUDENT-token→403, ADMIN-token→success. This is new coverage for a route that's configured but never exercised.
+
+*Repository (new pattern — `@DataJpaTest`, H2 `MODE=PostgreSQL`, following `src/test/resources/application.properties`):*
+- `QuestionRepository` filter-query correctness (category/type/level/status/keyword combinations, pagination).
+
+*Migration/integration (`@Tag("integration")`, gated out of default `test`, run via `integrationTest`):*
+- Recommend a Testcontainers-Postgres test that runs the real `V2__create_question_table.sql` through Flyway, since the H2 test profile currently has `spring.flyway.enabled=false` — today nothing verifies migration SQL actually applies. Mirror the existing `RedisRefreshTokenRepositoryTest` pattern (Docker-gated, documented in class Javadoc).
+
+*External dependency:*
+- `GptQuestionClient` must be fully mocked/stubbed in all test tiers — no live network calls, no API key required to run `./gradlew test`.
+
+*Regression baseline:*
+- `./gradlew test` (default, excludes `integration` tag) — all 6 existing auth/member tests must remain green, unmodified.
+- `./gradlew integrationTest` — existing Redis test plus any new Postgres/Testcontainers Question test, Docker-gated.
+
+REGRESSION_RISKS:
+1. **SecurityConfig edits** — any change near the `/api/questions/**` matcher risks breaking `/api/me/**`, `/api/assignments/**`, etc. rules or the existing `AuthControllerTest` assertions; rerun the full auth suite on any `SecurityConfig` diff.
+2. **GlobalExceptionHandler additions** — new `@ExceptionHandler` entries for Question exceptions must not shadow/reorder the existing `InvalidCredentialsException`/`InvalidRefreshTokenException` mappings.
+3. **Bean Validation introduction** (if chosen) — first use of `spring-boot-starter-validation` in this repo; adds a `MethodArgumentNotValidException` handling gap in `GlobalExceptionHandler` and is a classpath-wide change — verify it doesn't alter existing Auth request/response records.
+4. **JPA auditing / `BaseTimeEntity`** (if introduced) — `@EnableJpaAuditing` is global; `Member` currently has no timestamps, confirm it's unaffected.
+5. **Flyway migration** — `V2__create_question_table.sql` must not conflict with `V1__create_member_table.sql`; since the test profile disables Flyway entirely, migration correctness against real Postgres is otherwise unverified by any automated test (see integration-test recommendation above).
+6. **GPT client flakiness/cost/secrets** — unmocked calls in CI/local runs could leak keys, cause flakiness, or incur cost; must be fully stubbed.
+7. **No CI pipeline exists** — nothing currently enforces `./gradlew test` on PRs; broken tests can merge silently unless run manually or a workflow is added this phase.
+8. **No documented branch/merge policy** — ambiguity on what "integration branch" means and what blocks merging `phase-01/backend-question` into it; process risk, not a code risk.
+
+REVIEW_CHECKLIST (blocking merge into integration branch):
+1. `./gradlew test` passes, 0 failures/skips, including the full pre-existing auth/member suite unmodified and green.
+2. `./gradlew integrationTest` passes locally (Docker) for any new Testcontainers-based tests, or an explicit justification is given if omitted.
+3. Package structure and dependency direction match `code-convention.md` exactly (domain-first, `presentation→application→domain←infrastructure`, no cross-domain `application`/`presentation` coupling).
+4. Status-transition/validation logic lives on the `Question` entity, not leaked into the service layer.
+5. All 7 endpoints match `api-spec-detail.md` field-for-field (names, pagination envelope, list-vs-detail field exclusion).
+6. Error codes exactly match spec (`QUESTION_NOT_FOUND`, `INVALID_QUESTION`, `INVALID_STATUS_TRANSITION`, `GPT_GENERATION_FAILED`) via the existing `ErrorResponse{code,message}` shape.
+7. Explicit authZ test cases exist per endpoint (401 no-token, 403 wrong-role, 200/201 ADMIN) — not just one representative case for the whole controller.
+8. No unrelated changes to `SecurityConfig` matchers for `/api/me/**`, `/api/assignments/**`, etc. without corresponding test updates.
+9. New Flyway migration follows `V{n}__{description}.sql`, doesn't touch `V1`, and (ideally) is exercised by a real-Postgres integration test per the TEST_PLAN recommendation.
+10. If Bean Validation / JPA auditing is introduced, confirm additive-only — existing Auth/Member tests pass unmodified.
+11. GPT client is fully mocked in tests — no live network calls, no required secrets to run the default `test` task.
+12. Commit messages follow `git-convention.md` (`Type : 한글 설명`, e.g. `Feat`/`Test`).
+13. Test method naming follows the existing `method_condition_expectedOutcome` convention (no `@DisplayName`), consistent with the auth/member suite.
+14. Kalin has explicitly signed off on the two undocumented process gaps below (see NEXT) — don't let silence stand in for approval.
+
+NEXT:
+1. **Ask Kalin to confirm PHASE 1 scope boundary explicitly** — full Question management including GPT generation, or a smaller first slice (e.g., CRUD + status transitions, deferring `/generate` and `/generate/save`)? Nothing in the docs states this; it's currently inferred only from the branch name.
+2. **Ask Kalin to define the merge/integration-branch policy** — target branch for `phase-01/backend-question`, required reviewers, and whether CI is required before this phase closes. `git-convention.md` explicitly has no branch strategy written yet.
+3. **Ask Kalin whether to add `spring-boot-starter-validation` and a `BaseTimeEntity`/JPA-auditing base now**, since the Question slice would be the first domain needing both — better decided once, up front, than retrofitted.
+4. Recommend standing up a minimal CI workflow (`.github/workflows`, running `./gradlew test`) as part of this phase, since none exists and this is the first net-new backend feature since auth.
+5. Once scope is confirmed, hand this TEST_PLAN to the implementation worker(s); this QA/Integration Planner role re-reviews actual test files against the REVIEW_CHECKLIST before recommending merge.

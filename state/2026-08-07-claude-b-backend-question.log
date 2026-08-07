@@ -1,0 +1,47 @@
+Write is disabled in this session, so I'll deliver the audit directly as my response rather than via a plan file — this matches the role's read-only mandate anyway (no edits were made).
+
+STATUS:
+Auth/member vertical slice is fully implemented and tested (login, refresh, logout via JWT + Spring Security + Redis, built with TDD per commit `d895ba9`). The Question domain has **zero code** — no entity, repository, service, controller, DTOs, or migration exist. The groundwork is unusually well-prepared, though: `SecurityConfig` already gates `/api/questions/**` behind `ROLE_ADMIN`, `docs/code-convention.md` already documents the exact target package layout for `question`, and `docs/api-spec.md`/`docs/api-spec-detail.md` already fully specify 7 Question endpoints. **Readiness: green to start, pending a handful of design decisions below.**
+
+FINDINGS:
+- **Stack** (`backend/build.gradle`) matches docs: Spring Boot `4.1.0`, Java 21, Gradle 9.5.1, `spring-boot-starter-data-jpa`, `spring-boot-starter-flyway` + `flyway-database-postgresql`, `spring-boot-starter-webmvc`, `spring-boot-starter-security`, `spring-boot-starter-data-redis`, JJWT `0.13.0`, Postgres driver, Lombok. Tests use Boot 4's slice-specific `*-test` starters + Testcontainers + H2 (no `spring-boot-starter-test` umbrella — intentional Boot 4 style).
+- **Structure**: domain-first then layered (`domain/application/infrastructure/presentation`), plus `global` for cross-cutting concerns. Current domains: `auth`, `member`, `global`. `docs/code-convention.md` already prescribes: `question/domain/{Question,QuestionRepository,QuestionType,DifficultyLevel,QuestionStatus}`, `question/application/{QuestionService,QuestionGenerationService}`, `question/presentation/{QuestionController,QuestionRequest,QuestionResponse}`, `question/infrastructure/GptQuestionClient`. Rule: `presentation → application → domain ← infrastructure`; cross-domain access limited to another domain's `domain` layer; non-anemic Domain Model pattern (behavior methods, not just getters/setters).
+- **Security** (`global/security/SecurityConfig.java`): `/api/questions/**` already requires `hasRole("ADMIN")`; `/api/me/**` requires `hasRole("STUDENT")`; everything else authenticated except `POST /api/auth/login|refresh`. No `@EnableMethodSecurity`/`@PreAuthorize` anywhere — authorization is URL-pattern only. `JwtAuthenticationFilter` sets the principal to a raw `Long` member id (no `UserDetails`), so a Question controller reads the acting admin via `Authentication.getPrincipal()` cast to `Long`.
+- **Exceptions** (`global/exception/GlobalExceptionHandler.java`): currently only maps `InvalidCredentialsException`/`InvalidRefreshTokenException`. No generic/validation handler exists. Needs new entries for `QUESTION_NOT_FOUND` (404), `INVALID_QUESTION` (400), `INVALID_STATUS_TRANSITION` (409), `GPT_GENERATION_FAILED` (502) per the spec.
+- **Data layer**: one Flyway migration, `V1__create_member_table.sql` (`BIGSERIAL` PK, explicit `VARCHAR(n)`, named `uk_*` constraints, enum-as-`VARCHAR`) — the precedent style for `V2__create_question_table.sql`.
+- **API spec** is fully written already: `GET /api/questions` (filtered/paginated list, omits choices/answer/explanation), `GET /api/questions/{id}` (full detail), `POST /api/questions` (always created as `초안`/draft), `PATCH /api/questions/{id}`, `PATCH /api/questions/{id}/status` (`사용 중`/`사용 중지`, 409 on illegal transitions e.g. draft→disabled directly), `POST /api/questions/generate` (GPT draft, not persisted), `POST /api/questions/generate/save` (persist reviewed drafts as `초안`). Common conventions: pagination envelope `{content,page,size,totalElements,totalPages}`, error envelope `{code,message}`.
+- **Test strategy** (to mirror): 1:1 test class per production class, package-mirrored. Domain = plain JUnit/AssertJ. Application/service = pure Mockito unit tests, no Spring context. Infra touching Redis = `@Tag("integration")` + Testcontainers, excluded from default `./gradlew test`, run via separate `integrationTest` task (needs Docker). Web = `@WebMvcTest` + `@Import` of real security/exception beans + `@MockitoBean` service + MockMvc/jsonPath. Test profile uses H2 in Postgres-compat mode with **Flyway disabled** (`ddl-auto=create-drop`). Gaps: no `@DataJpaTest` precedent anywhere yet, and no shared test fixture/builder classes exist.
+
+RISKS:
+1. **Choices storage vs. H2 fidelity** — multiple-choice `choices` field storage isn't decided (JSON/jsonb? child table? array?). H2 Postgres-compat mode with Flyway disabled may not faithfully emulate Postgres-specific types, risking tests that pass on H2 but diverge on real Postgres.
+2. **Status transition rules are underspecified** — only one example given (draft→disabled illegal); the full state machine needs to be defined before coding to avoid rework.
+3. **GPT client is new risk surface** — no precedent for external API integration in this codebase. Needs a mocking/testing strategy (injectable client interface + mock/WireMock) and timeout/error handling design.
+4. **No generic exception handler** — without a fallback/validation handler, `@Valid` failures or unexpected exceptions on new endpoints could leak stack traces instead of the spec'd `{code,message}` envelope.
+5. **Branch naming mismatch** — current branch is `phase-01/frontend-react`, but this work is backend. Worth confirming with Kalin whether this is the intended branch.
+6. `POST /api/auth/logout` requires auth (not `permitAll`) unlike login/refresh — existing intentional behavior, just noting it as a precedent for how strictly "similar" endpoints diverge.
+
+REQUIRED_DECISIONS:
+1. Choices persistence model, and whether to keep H2 or introduce Testcontainers-Postgres for Question repository tests.
+2. Full status state machine for `초안`/`사용 중`/`사용 중지` (every valid/invalid transition, not just the one spec'd case).
+3. GPT client integration approach — HTTP client choice, API key/secret handling convention (matching how `jwt.secret` is externalized), timeout/retry, test-double strategy.
+4. Repository test pattern — adopt `@DataJpaTest` as first precedent in this codebase (H2 vs Testcontainers-Postgres).
+5. Whether `GlobalExceptionHandler` gains a generic/validation fallback now, or stays strictly per-exception as with auth.
+6. Branch strategy for backend Question work.
+
+RECOMMENDED_TASKS (for implementation phase, not started):
+1. `V2__create_question_table.sql`, following `V1`'s style — pending decision #1.
+2. `question/domain`: `Question` entity (Domain Model, `activate()`/`disable()`/transition guards), `QuestionRepository`, `QuestionType`/`DifficultyLevel`/`QuestionStatus` enums — pending decision #2.
+3. `question/application`: `QuestionService`, `QuestionGenerationService`, plus `QuestionNotFoundException`/`InvalidQuestionException`/`InvalidStatusTransitionException`.
+4. `question/infrastructure`: `GptQuestionClient` — pending decision #3.
+5. `question/presentation`: `QuestionController` + `QuestionRequest`/`QuestionResponse` matching `docs/api-spec-detail.md` field-for-field.
+6. Extend `GlobalExceptionHandler` with the 4 new error codes — pending decision #5.
+7. Tests mirroring existing TDD pattern: `QuestionTest`, `QuestionServiceTest`, `QuestionGenerationServiceTest` (mocked GPT client), `QuestionControllerTest`, and new `QuestionRepositoryTest` (`@DataJpaTest`) — pending decision #4.
+8. No `SecurityConfig` change needed for baseline admin-only endpoints (already gated); revisit only if student read access is added later.
+
+TESTS_TO_RUN (once implementation begins):
+- `./gradlew test` — default fast suite (excludes `integration` tag), must stay green.
+- `./gradlew integrationTest` — Testcontainers-backed tests (needs Docker); run if new Question tests use Testcontainers-Postgres or a mocked GPT server tagged `integration`.
+- `./gradlew build` — full compile + test + packaging check.
+
+NEXT:
+Kalin resolves the 6 REQUIRED_DECISIONS (choices storage, status state machine, GPT client approach, repository test pattern, exception-handler scope, branch strategy). Once resolved, implement in TDD order per the auth-slice precedent: domain → application → infrastructure → presentation, extending `GlobalExceptionHandler` alongside the application layer.

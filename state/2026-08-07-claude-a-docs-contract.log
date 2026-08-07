@@ -1,0 +1,58 @@
+## STATUS
+Read-only audit complete. Reviewed `README.md`, `docs/api-spec.md`, `docs/api-spec-detail.md`, `docs/feature-spec.md`, `docs/code-convention.md`, `docs/git-convention.md`, `sample-html/preview.html`, and the existing `backend/` auth/member implementation. No files modified.
+
+## FINDINGS
+
+**1. `type` query param for study records: English vs Korean enum mismatch (api-spec.md vs api-spec-detail.md)**
+- `docs/api-spec.md:128` — `GET /api/study-records` and `/api/me/history` list `type(ASSIGNMENT/PRACTICE)`.
+- `docs/api-spec-detail.md:491,505` — same endpoints list `type(과제/자유 학습)`.
+- Same field, two incompatible value sets in the two docs that are supposed to be in sync (`api-spec.md` explicitly says the detail doc is the authoritative field-level source). Every other enum-like field (`category`, `type` on questions, `status`) uses Korean values consistently in both docs — this is the one place they diverge.
+
+**2. GPT draft generation response shape conflicts between the two specs**
+- `docs/api-spec.md:88` — "응답은 저장 전 초안 문제 배열(`Question`과 동일한 필드, `id` 없음)입니다" → implies the response body **is** an array, and `generate/save`'s request is "위 응답 배열을 검수 후... 그대로 전달" → implies the save request body is also a bare array.
+- `docs/api-spec-detail.md:297-349` — response is `{ "drafts": [...] }` and the save request is `{ "drafts": [...] }`, both wrapped objects, with response shaped differently again on save (`{ "saved": [...] }`).
+- FE and BE will build against different wire shapes if they don't converge on one doc; this is a direct, resolvable contract conflict, not just a documentation-detail gap.
+
+**3. No submit/grade endpoint for free practice or wrong-answer retry**
+- `POST /api/me/assignments/{assignmentId}/answers` is the only defined submit/grade endpoint, and it's scoped to an `assignmentId`.
+- `GET /api/me/practice/questions` (자유 학습) and `POST /api/me/wrong-answers/{id}/retry` both return question data for the student to solve, but neither doc defines how the answer is submitted/graded for these two flows, nor how a wrong-answer's `status` (미복습/복습 중/해결) is supposed to transition after a correct retry.
+- This blocks both the FE 문제 풀이 screen (which is explicitly described in `feature-spec.md` as shared across "자유 학습 / 과제 수행 공통") and the WrongAnswer domain's status-transition logic on the backend.
+
+**4. Question status transition rule undocumented for the illustrative domain code**
+- `api-spec-detail.md:271` documents a real business rule: 초안→사용 중지 is blocked (`409 INVALID_STATUS_TRANSITION`).
+- The example `Question` entity in `docs/code-convention.md:144-153` shows `disable()` with **no guard at all** — it unconditionally sets `status = DISABLED`, contradicting the rule the API spec commits to. Since this file is explicitly the reference pattern for how domain methods should be written, whoever implements `question` domain will likely copy this unguarded version unless it's corrected.
+- Full transition matrix is also incomplete: nothing states whether 사용 중지→사용 중 (reactivate) or any return to 초안 is allowed.
+
+**5. Question type MVP scope is inconsistent between docs, spec, and wireframe**
+- `feature-spec.md` and both API specs declare 3 question types (객관식/빈칸/오류 찾기), and `POST /api/questions` requires `choices` only when `type === 객관식` (implying 빈칸/오류 찾기 use free-text answers).
+- `sample-html/preview.html` only ever implements 객관식: the 문제 풀이 screen (`renderPractice`, line ~758-777) hardcodes `q.choices.map(...)` with no free-text input path, and all 4 seeded sample questions are 객관식.
+- All student-facing question-delivery responses in `api-spec-detail.md` (`/api/me/assignments/{id}/questions`, `/api/me/practice/questions`, wrong-answer retry) only model a `choices` array — there's no documented shape for a 빈칸/오류 찾기 question or its answer-input UI.
+- Even within the wireframe itself, the 문제 관리 filter dropdown (line 661) only offers 객관식/빈칸 while the GPT-generation type dropdown (line 841) offers all three — the wireframe doesn't agree with itself on scope.
+
+**6. Auth: single active session per member is implicit, undocumented behavior**
+- `RedisRefreshTokenRepository` (`backend/.../auth/infrastructure/RedisRefreshTokenRepository.java:14-21`) keys refresh tokens by `memberId` only (`refresh-token:{memberId}`). A new login or refresh **overwrites** the previous token, silently invalidating any other active session for that account.
+- Nothing in `feature-spec.md` or either API spec states this as intended behavior (e.g., "one device at a time"). It's currently only discoverable by reading the implementation, and matters for how the FE should handle a `TOKEN_INVALID` response after a second login.
+
+## RISKS
+- Building FE against `api-spec.md`'s GPT-generation shape while BE implements `api-spec-detail.md`'s shape (or vice versa) causes integration breakage late in Phase 1.
+- Free-practice and wrong-answer-retry screens cannot be implemented (FE or BE) until an answer-submission contract exists for them — currently a hard blocker, not just a nice-to-have.
+- If the `Question.disable()` example is copied verbatim into real code, the documented 409 `INVALID_STATUS_TRANSITION` error will never fire, silently diverging from the spec and any FE error-handling built against it.
+- Without agreement on 빈칸/오류 찾기 UI, GPT-generated non-객관식 questions may get created via `POST /api/questions/generate` with no way for a student to ever answer them correctly through the FE.
+
+## REQUIRED_DECISIONS
+1. Pick one value format (English `ASSIGNMENT/PRACTICE` or Korean `과제/자유 학습`) for the `type` query param on `/api/study-records` and `/api/me/history`, and correct the other doc.
+2. Pick one wire shape (bare array vs `{ "drafts": [...] }` / `{ "saved": [...] }`) for `POST /api/questions/generate` and `/generate/save`, and correct the other doc.
+3. Define the submit/grade contract for free practice and wrong-answer retry: same endpoint shape as assignment answers (generalized, e.g. `POST /api/me/practice/answers`) or a dedicated endpoint per flow — and define the resulting WrongAnswer status transition rule (미복습/복습 중 → 해결).
+4. Confirm and document the full question status transition matrix (which transitions are allowed from 초안/사용 중/사용 중지), then fix the `disable()` example in `code-convention.md` to match.
+5. Decide MVP scope for question types: ship 빈칸/오류 찾기 in Phase 1 (requires new answer-input UI spec + response schema for non-choice questions) or explicitly descope them to 객관식-only for Phase 1 and update `feature-spec.md`/wireframe accordingly.
+6. Confirm single-active-session-per-member is intended; if so, document it in `feature-spec.md`'s login section and define expected FE behavior on second-login invalidation.
+
+## RECOMMENDED_TASKS
+- Reconcile `api-spec.md` and `api-spec-detail.md` on items 1–2 above (docs-only change, no code).
+- Add an explicit answer-submission endpoint (or extend the existing one) for free practice and wrong-answer retry, plus document the WrongAnswer status state machine.
+- Correct the `Question` entity example in `code-convention.md` to enforce the documented 초안→사용중지 guard, and spell out the full transition matrix in `api-spec-detail.md`.
+- Resolve the question-type MVP scope decision and update `feature-spec.md` + wireframe consistency (both dropdowns) accordingly.
+- Add a short note to `feature-spec.md`'s 로그인 section documenting single-session behavior.
+
+## NEXT
+Awaiting Kalin's decisions on the 6 items above before implementation (backend `question`/`wronganswer` domains, frontend React scaffolding) proceeds — several of these (items 1, 3, 5) directly block FE/BE contract alignment and should be resolved first.

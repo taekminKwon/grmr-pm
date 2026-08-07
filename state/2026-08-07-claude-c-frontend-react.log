@@ -1,0 +1,38 @@
+Plan file written to `/Users/taekmin/.claude/plans/role-frontend-react-planner-floofy-ripple.md` (read-only investigation, no scaffolding). ExitPlanMode isn't available as a tool in this session, so returning the final report directly in the requested format:
+
+STATUS:
+Read-only investigation complete. Read `README.md`, `docs/feature-spec.md`, `docs/api-spec.md`, `docs/api-spec-detail.md`, `docs/code-convention.md`, `docs/git-convention.md`, `sample-html/preview.html`, and all implemented backend source (`auth/**`, `member/domain/**`, `global/security/**`). Cross-checked with two independent Explore sub-agents — no contradictions found. No files created/edited/installed except the plan file itself.
+
+FINDINGS:
+- **Grammar Lab**: Korean grammar practice/LMS. Fixed roles from login (`ADMIN`/`STUDENT`), no signup — accounts pre-provisioned.
+- `sample-html/preview.html` is the actual product spec (vanilla JS, no real routing, in-memory `state.page`). Its sidebar role-switch toggle is explicitly demo-only per `feature-spec.md` §0 — real app must NOT have a role switcher; role is fixed from login.
+- Question Management (`renderQuestionManagement`) is fully speced: filtered/paginated list, detail modal (edit/disable), direct-create modal, and a GPT-generate → review → bulk-save flow. Full field-level contract exists in `docs/api-spec-detail.md`.
+- Auth is **fully implemented** backend-side: `POST /api/auth/login|refresh|logout`, tokens delivered in JSON body only (no cookies, no CSRF concerns), `Authorization: Bearer` header required everywhere except login/refresh. Role → `ROLE_ADMIN`/`ROLE_STUDENT` gating is centralized in `SecurityConfig` exactly as documented.
+- **Question/Assignment/Student/StudyRecord/WrongAnswer domains have zero backend code** — spec-only. A peer session `phase01-backend-question` appears to be building the Question domain concurrently.
+- **No CORS config exists anywhere in the backend** — confirmed via grep, zero matches. This blocks any cross-origin React dev server from calling the API until resolved.
+- No frontend tooling, framework version, or state-mgmt choice is recorded anywhere in the repo — this is a real open decision, not an oversight to route around.
+
+ROUTES:
+`/login` (public) → `/admin/{dashboard,questions,assignments,assignments/:id,students,students/:id,history}` (ROLE_ADMIN) and `/student/{dashboard,assignments,practice/:questionId?,history,wrong}` (ROLE_STUDENT). Question CRUD/GPT-generate stay as modals over `/admin/questions` rather than separate routes, matching the wireframe's modal UX.
+
+COMPONENTS:
+`app/` (routes + shell), `auth/` (AuthProvider, LoginPage, RequireRole guard), `api/` (fetch client with auth-header injection + 401→refresh→retry, per-domain call modules), `domains/questions/*` (ListPage, FilterBar, Table, DetailModal, CreateModal, GenerateModal, GeneratedQuestionReview — full breakdown in plan file), `domains/{dashboard,assignments,students,history,practice,wrongAnswers}` stubbed for later phases, `shared/ui` componentizing the wireframe's CSS primitives (Card, MetricCard, Btn variants, StatusBadge, ProgressBar, Modal, Toast, DataTable). Domain-first grouping mirrors the backend's own domain-first convention.
+
+API_DEPENDENCIES:
+Auth endpoints — implemented, safe to build against now. Question/Assignment/Student/StudyRecord/Dashboard/Me/WrongAnswer endpoints — documented only, not implemented; Question domain is the immediate blocker for the Phase 1 screen and is reportedly in progress on a peer session.
+
+RISKS:
+1. No CORS config backend-side — needs a `CorsConfig` bean or a dev-server proxy before login can even be tested from a React app.
+2. Question backend doesn't exist yet — frontend can scaffold and build UI against a stub/mock matching the documented contract, but real data wiring is blocked.
+3. Token storage tradeoff (localStorage vs. memory-only) is a real product decision given both tokens arrive in plain JSON with no cookie option — should be an explicit call, not a silent default.
+4. No frontend tooling decision on record (Vite vs CRA vs Next, state-mgmt library) — first go/no-go before scaffolding.
+5. All enum values are literal Korean strings (`"객관식"`, `"사용 중지"`, etc.) reused across filters/badges/forms — needs one shared constants module per domain to avoid typos.
+
+NEXT:
+1. Confirm tooling choice, state-mgmt approach, and token-storage tradeoff with Kalin.
+2. Scaffold `frontend/` shell + auth flow against the already-implemented auth endpoints (unblocks real login testing immediately).
+3. Build Question Management UI against a mocked API layer matching the documented contract, in parallel with backend work.
+4. Swap in real Question endpoints once `phase01-backend-question` lands; verify list-DTO vs detail-DTO field differences.
+5. Resolve CORS no later than step 2.
+
+Full detail is in the plan file for reference. Ready for implementation assignment whenever Kalin approves.

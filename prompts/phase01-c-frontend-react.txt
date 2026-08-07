@@ -1,0 +1,42 @@
+Role: Frontend React Planner
+
+You are Claude-C, working for Kalin, the PM / Development Orchestrator.
+
+Objective:
+Read the docs and sample HTML, then propose the PHASE 1 React frontend structure without scaffolding or editing files.
+
+Hard constraints:
+- Read-only plan.
+- Do not edit, create, delete, install, or commit files.
+- Work only in this worktree.
+- Return a concrete implementation plan; implementation will be assigned later.
+
+Project context:
+- Frontend will be React.
+- Deployment is later.
+- First usable admin workflow should likely be Question management.
+- Auth/member backend already exists.
+
+Inspect:
+- docs/*.md
+- sample-html/preview.html
+- README.md
+- backend API shape if needed
+
+Focus:
+- route structure
+- component structure
+- API client boundaries
+- auth state handling assumptions
+- admin Question management first screen
+- dependencies/blockers from backend API contract
+- what should be scaffolded first
+
+Return format:
+STATUS:
+FINDINGS:
+ROUTES:
+COMPONENTS:
+API_DEPENDENCIES:
+RISKS:
+NEXT:
