@@ -53,6 +53,12 @@ OpenClaw cron job:
 - Purpose: monitor Claude process, project cwd, and important document drift.
 - Delivery: silent by default; wakes main session only on meaningful issue.
 
+Daily PM report cron job:
+
+- Job ID: `e53603b0-f1e9-4e57-ab10-9c5f1411abc3`
+- Schedule: 23:45 Asia/Seoul daily
+- Purpose: update daily PM log, commit it in this repository, and report summary to Discord.
+
 ## Available APIs / Interfaces
 
 ### OpenClaw
@@ -86,4 +92,3 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 2. If PHASE 1 approved, spawn/assign Claude workers via branches/worktrees.
 3. Keep daily log updated in this PM repository.
 4. Report when Claude token/budget exhaustion or limit condition is detected.
-
