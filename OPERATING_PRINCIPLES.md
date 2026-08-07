@@ -52,6 +52,18 @@ Each worker prompt should include:
 - Testing Requirement
 - Return Format
 
+## Micro Prompt / Commit Policy
+
+Taekmin's rule, received 2026-08-07:
+
+- Prompt Claude in small feature/task units, not large phase-sized prompts.
+- Avoid loading excessive context into one prompt.
+- Prefer one endpoint, one component, one migration, one test class, or one document-contract patch per prompt.
+- Each prompt should have a bounded file scope, acceptance criteria, and a test/check command.
+- Treat each successful micro task as a small commit unit.
+- After each micro task, PM reviews diff/scope/tests before the next task.
+- Use multiple sequential prompts instead of one broad prompt when work can be split.
+
 ## Claude Worker Return Format
 
 STATUS:

@@ -62,6 +62,15 @@ Grammar Lab (`grmr`) is an English grammar practice and learning management serv
 - 택민님은 각 PR을 보고 PHASE 마무리/merge 여부를 확인합니다.
 - PM은 PR 전 diff/test/scope를 먼저 검토하고, 필요하면 Claude worker에게 수정을 재지시합니다.
 
+## Micro Prompt / Commit 운영
+
+- Claude에게 한 번에 큰 PHASE 전체를 맡기지 않습니다.
+- 프롬프트 단위는 기능/검증 가능한 작은 task로 나눕니다.
+- 기본 단위는 endpoint 1개, component 1개, migration 1개, test class 1개, docs contract patch 1개입니다.
+- 각 task는 bounded file scope, acceptance criteria, test/check command를 포함해야 합니다.
+- 각 task 완료 후 PM이 diff/scope/test를 확인하고, 통과한 단위만 작은 commit으로 남깁니다.
+- 컨텍스트가 커지면 새 micro prompt로 분리합니다.
+
 ## 현재 모니터링
 
 OpenClaw cron job:
@@ -132,9 +141,9 @@ Note: no direct Claude "remaining token quota" API has been identified. Token ex
 
 ## 다음 PM 작업
 
-1. Claude-A에게 docs contract 정리 작업을 배정하고 `phase-01/docs-contract` branch에서 PR 준비합니다.
-2. Claude-B에게 Question domain/Flyway/API TDD 작업을 배정하고 `phase-01/backend-question` branch에서 PR 준비합니다.
-3. Claude-C에게 Vite React TypeScript scaffold/auth/question UI 작업을 배정하고 `phase-01/frontend-react` branch에서 PR 준비합니다.
+1. Claude-A에게 docs contract 정리 작업을 micro prompt 단위로 배정하고 `phase-01/docs-contract` branch에서 PR 준비합니다.
+2. Claude-B에게 Question domain/Flyway/API TDD 작업을 endpoint/test 단위로 쪼개 배정하고 `phase-01/backend-question` branch에서 PR 준비합니다.
+3. Claude-C에게 Vite React TypeScript scaffold/auth/question UI 작업을 component 단위로 쪼개 배정하고 `phase-01/frontend-react` branch에서 PR 준비합니다.
 4. Claude-D는 QA reviewer로 두고 worker 결과와 PR merge gate를 검증합니다.
 5. PM 로그는 한국어 우선으로 작성하고 GitHub에 푸시합니다.
 6. Claude token/budget 제한이 감지되면 당일 작업/내일 작업과 함께 보고합니다.
