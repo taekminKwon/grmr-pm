@@ -70,14 +70,25 @@ OpenClaw cron job:
 - Schedule: every 3 minutes
 - Purpose: monitor Claude process, project cwd, and important document drift.
 - Delivery: silent by default; wakes main session only on meaningful issue.
+- Status: paused at Taekmin's request.
 
 Daily PM report cron job:
 
 - Job ID: `e53603b0-f1e9-4e57-ab10-9c5f1411abc3`
 - Schedule: 23:45 Asia/Seoul daily
 - Purpose: update daily PM log, commit it in this repository, and report summary to PM Discord channel `1535183582727901195`.
+- Status: paused at Taekmin's request.
 
 Note: PM Discord channel `1535183582727901195` is now allowlisted in OpenClaw config. Daily PM threads can be created with `openclaw message thread create`.
+
+## Claude Token / Limit 보고
+
+- Claude token/quota/usage/rate limit 또는 equivalent blocking condition이 감지되면 해당 model/session에 추가 작업을 배정하지 않습니다.
+- PM Discord thread에 즉시 보고합니다.
+- 오늘 완료한 일과 내일/limit reset 후 해야 할 일을 정리합니다.
+- PM daily log를 갱신하고 commit/push합니다.
+- 가능하면 PM log commit hash를 함께 보고합니다.
+- 현재 cron은 일시 중지되어 있으므로 background 자동 감지는 꺼져 있습니다. active PM 작업 중 감지되는 limit은 즉시 보고합니다.
 
 ## 사용 가능한 API / 인터페이스
 

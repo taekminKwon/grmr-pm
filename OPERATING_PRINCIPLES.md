@@ -124,3 +124,14 @@ Taekmin's latest rule, received 2026-08-07:
 - When a worker/phase is ready, open a GitHub Pull Request targeting `main`.
 - Taekmin reviews phase completion through those PRs.
 - PM may review, test, request fixes, and prepare PRs, but final phase acceptance belongs to Taekmin.
+
+## Claude Token / Limit Reporting
+
+Taekmin's rule, received 2026-08-07:
+
+- If Claude token exhaustion, quota exhaustion, usage-limit, rate-limit, or equivalent blocking condition is detected, stop assigning further Claude work that depends on that model/session.
+- Report the event in the PM Discord thread.
+- Record what was completed today and what should be done tomorrow or after the limit resets.
+- Update the PM daily log and commit/push the PM log repository.
+- Include the PM log commit hash in the report when possible.
+- If cron is disabled, automatic background detection may not run; any limit encountered during active PM work must still be reported immediately.
