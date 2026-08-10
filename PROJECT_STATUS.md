@@ -1,12 +1,12 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-07 17:08 KST
+Last updated: 2026-08-10 15:25 KST
 
 ## 현재 PHASE
 
-PHASE 1 준비: 계약 정합성 감사 완료, 첫 vertical slice 작업 분배 준비.
+PHASE 1 진행 중: Question backend vertical slice 구현 및 QA 보정 완료, draft PR 검토/merge 승인 대기.
 
-사용자는 iTerm/tmux 기반 Claude worker 운영 방식과 PM 로그 한국어 운영을 승인했습니다. 첫 Claude worker 라운드는 읽기 전용 감사/계획으로 실행 완료했습니다.
+Question backend branch는 PR #11에 반영되어 있고 merge는 택민 승인 대기입니다. Codex가 OpenClaw의 PM/Development Orchestrator 역할과 자동화 운영을 인수했습니다.
 
 ## 현재 상태
 
@@ -15,19 +15,20 @@ PHASE 1 준비: 계약 정합성 감사 완료, 첫 vertical slice 작업 분배
 - PM log remote: `https://github.com/taekminKwon/ewha-grmr-pm`
 - PM Discord channel: `1535183582727901195`
 - Current PM Discord daily thread: `1535186299797901343` (`2026-08-07 ewha-grmr PM`)
-- tmux session: `ewha-grmr-workers`
+- Claude bridge LaunchAgent: `com.taekmin.ewha-grmr-claude-bridge`
+- Bridge queue: `/Users/taekmin/.local/share/ewha-grmr-pm/claude-backend-bridge`
+- Codex heartbeat: `ewha-grmr PM orchestration loop` (5분 간격, 23:45 이후 daily close 포함)
 - worker worktrees:
   - `phase-01/docs-contract` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/docs-contract`
   - `phase-01/backend-question` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/backend-question`
   - `phase-01/frontend-react` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/frontend-react`
   - `phase-01/qa-review` → `/Users/taekmin/Desktop/ewha-grmr-worktrees/qa-review`
 - Claude CLI: `/Users/taekmin/.local/bin/claude`
-- Claude version: `2.1.224`
-- Active Claude Code session:
-  - cwd: `/Users/taekmin/Desktop/ewha-grmr`
-  - sessionId: `bf80e47a-1d7c-4f58-b48b-2231eb34b2a6`
-  - name: `document-login-api-jwt`
-  - status: idle at last check
+- Claude version verified during takeover: `2.1.226`
+- Bridge health check: PASS (LaunchAgent PID 9030 at setup time; backend-question clean at `4646dfa`)
+- Draft PR #11: `https://github.com/taekminKwon/ewha-grmr/pull/11`
+- backend-question local/origin HEAD: `4646dfa`
+- Backend full test suite after QA corrections: 99 tests, 0 failures/errors
 
 ## 프로젝트 요약
 

@@ -158,3 +158,24 @@ Taekmin's rule, received 2026-08-07:
 - Update the PM daily log and commit/push the PM log repository.
 - Include the PM log commit hash in the report when possible.
 - If cron is disabled, automatic background detection may not run; any limit encountered during active PM work must still be reported immediately.
+
+## Codex / Claude Token Utilization
+
+Taekmin's rule, received 2026-08-10:
+
+- While useful work remains inside an approved scope, continue the micro-task loop until at least one of Codex or Claude reaches its daily token/usage limit.
+- Spend the budget on real deliverables: implementation, tests, QA, documentation, tracking, and review. Do not burn tokens on meaningless repetition.
+- Finishing one micro task is not a stopping condition when another approved, bounded task is ready.
+- Token utilization does not override approval gates, scope boundaries, the main-merge prohibition, security/cost decisions, or protection of user changes.
+- When either side reaches a limit, record the exact stopping point, completed work, remaining work, and the next resumable micro task.
+
+## Automated Worker Loop
+
+Taekmin approved automated orchestration on 2026-08-10:
+
+- A user LaunchAgent keeps the authenticated Claude bridge running outside the Codex sandbox.
+- Codex writes bounded prompts to the bridge queue and reviews result, exit status, git diff, and test reports.
+- A Codex heartbeat checks active work every five minutes and continues only already-approved PHASE backlog.
+- The same heartbeat performs the daily PM close once after 23:45 KST.
+- Automation must remain silent when state has not meaningfully changed.
+- Automation may not merge to main, force-push, start a new PHASE, or cross an approval gate.
