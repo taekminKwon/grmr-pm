@@ -1,27 +1,27 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-12 11:20 KST
+Last updated: 2026-08-12 23:50 KST
 
 ## 현재 PHASE
 
-PHASE 1 진행 중입니다. Question backend vertical slice, 핵심 문서 계약, React/TypeScript 기반, 로그인 화면 shell, PostgreSQL·Redis·backend Docker Compose 구성까지 `main`에 반영됐습니다.
+PHASE 1 마감 단계입니다. Question backend, 실제 관리자 로그인, Question API 계약과 목록 UI, 문서 계약, full-stack Compose가 `main`에 반영됐습니다. 관리자 전용 Question 생성 UI는 draft PR #28에서 사용자 승인·merge를 기다립니다.
 
-남은 핵심 범위는 frontend Question API 계약/목록 화면, 실제 인증 연동, 문서 Issue #3, 통합 QA입니다. Nginx frontend 정적 서빙도 PR #20을 통해 main에 반영됐고 최신 full-stack Compose 검증을 통과했습니다.
+PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Issue #10 최종 QA를 수행하면 Phase 1 종료 판정이 가능합니다.
 
 추정 진행률:
 
-- PHASE 1: 약 65%
-- 전체 MVP: 약 30~35%
+- PHASE 1: 약 90~95%
+- 전체 MVP: 약 40%
 
 ## 기준선 및 실행 상태
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
-- `origin/main`: `28af000` (PR #20 Nginx frontend main 전달 merge)
-- Local main 상태: auth 미커밋 변경 정리 완료, untracked `data/`만 보존
+- `origin/main`: `3638799` (PR #27 Question 목록·필터 merge)
+- Local main: `origin/main`과 동기화, ignored `.env`와 보존 대상 `data/` 사용
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
 - PM log remote: `https://github.com/taekminKwon/ewha-grmr-pm`
-- Claude bridge: `com.taekmin.ewha-grmr-claude-bridge`
-- Bridge queue: `/Users/taekmin/.local/share/ewha-grmr-pm/claude-backend-bridge`
+- Backend Claude bridge: `/Users/taekmin/.local/share/ewha-grmr-pm/claude-backend-bridge`
+- Frontend Claude bridge: `/Users/taekmin/.local/share/ewha-grmr-pm/claude-frontend-bridge`
 - Codex heartbeat: `ewha-grmr PM orchestration loop`, 30분 간격, active
 - PostgreSQL: `grmr-postgres`, localhost:5432, healthy
 - Redis: `grmr-redis`, localhost:6379, healthy
@@ -40,6 +40,17 @@ PHASE 1 진행 중입니다. Question backend vertical slice, 핵심 문서 계�
 - #17 Backend Docker/Compose — `e0a001ae`
 - #18 Auth domain interface refactor — `b3b88563`
 - #20 Nginx frontend main 전달 — `28af000c`
+- #21 실제 frontend 로그인 API 연동
+- #22 local 관리자 시드 계정
+- #23 Question 상태 전이·자유 학습 제출 계약
+- #24 오렌지 관리자 UI 기반
+- #25 Question API 계약·fixture — `b6264b1`
+- #26 PostgreSQL Question ID 생성 정합화 — `4b3dc58`
+- #27 관리자 Question 목록·필터 — `3638799`
+
+### 승인 대기
+
+- #28 관리자 전용 Question 생성 UI — draft, mergeable
 
 ### Stacked branch 반영
 
@@ -55,36 +66,40 @@ PHASE 1 진행 중입니다. Question backend vertical slice, 핵심 문서 계�
 - Frontend container: Nginx `/`, `/login`, `/healthz` 200
 - Nginx `/api/questions` proxy: backend 401 응답으로 path-preserving proxy 확인
 - 격리된 full-stack Compose 검증: postgres/redis/backend/frontend 모두 healthy
+- 실제 관리자 로그인 200, Question 목록 API 200, `/admin/questions` 200
+- Question API contract/fixture: frontend 55/55 tests, build/lint PASS
+- Question 목록 UI: frontend 67/67 tests, build/lint PASS
+- Question 생성·역할 검사: frontend 85/85 tests, build/lint PASS
+- PostgreSQL Flyway ID 생성 통합 테스트 PASS
 
 ## 구현 현황
 
 - Question backend: 완료 및 main 반영
 - GPT draft/save backend: fake/local adapter 방식 완료, 실제 외부 호출 없음
 - 문서 계약: GPT 응답, StudyRecord type, 단일 세션, 객관식-only MVP 반영
-- Frontend 기반: Vite + React + TypeScript + Router + Vitest + ESLint 완료
-- 로그인 화면: 접근 가능한 shell과 route/fallback 완료, 실제 auth API 연동은 미구현
+- Frontend 기반 및 실제 로그인·세션·보호 라우트 완료
+- Question 목록·필터·페이지네이션 완료 및 main 반영
+- Question 생성 UI와 ADMIN/STUDENT 렌더링 권한 검사 완료, PR #28 승인 대기
 - Local infra: PostgreSQL·Redis 완료
 - Backend Compose: 완료 및 main 반영
 - Frontend Nginx Compose: main 반영 및 실제 full-stack 재검증 완료
 
 ## 알려진 리스크 / 드리프트
 
-- 문서는 PHASE 1을 `MULTIPLE_CHOICE` only로 정의하지만 backend enum/API는 미래 유형도 허용합니다. frontend에서는 객관식만 노출할 예정입니다.
 - 실제 GPT key가 없어 외부 integration test는 분리 대기입니다.
-- 로그인 UI는 아직 실제 API 호출, token 저장, refresh, protected route를 구현하지 않았습니다.
-- Free-practice answer endpoint와 Question 상태 전이 계약은 Issue #3에서 정리해야 합니다.
-- GitHub Issue 상태가 실제 PR 진행과 어긋납니다. #1, #4~#7은 구현/merge됐지만 OPEN이며 label도 `status:ready`입니다.
+- Backend enum/API는 미래 문제 유형도 표현하지만 Phase 1 frontend는 객관식만 노출합니다.
+- 기존 Redis refresh-token integration test의 Spring Security test context 오류는 별도 후속 보정 후보입니다.
+- Compose의 고정 `container_name` 때문에 프로젝트 이름을 다르게 실행하면 충돌합니다. 현재는 `-p infra-compose`를 사용합니다.
+- 예약 heartbeat에서 Codex 모델 capacity 오류가 간헐적으로 발생하지만 Claude bridge와 수동 실행은 정상입니다.
 - PR #19의 stacked-base 문제는 main 전달용 PR #20 merge로 해결됐습니다.
-- Compose의 고정 `container_name` 때문에 여러 worktree stack을 동시에 기본 이름으로 실행할 수 없습니다.
 
 ## GitHub 작업 추적
 
 - Milestone: `PHASE 1 - Question Vertical Slice`
 - Project: `https://github.com/users/taekminKwon/projects/1`
-- 완료로 정리해야 할 issue: #1, #4, #5, #6, #7
-- 실제 CLOSED: #2
-- 남은 제품 backlog: #3, #8, #9, #10
-- 다음 PM tracking task: 완료 issue close/label/Project status 정합화
+- Issues #1~#9: CLOSED
+- 남은 공식 Phase 1 backlog: #10 통합 QA
+- 새 Phase와 Phase 2 범위는 Phase 1 종료 후 사용자 승인 전 시작하지 않음
 
 ## 운영 제약
 
@@ -95,8 +110,7 @@ PHASE 1 진행 중입니다. Question backend vertical slice, 핵심 문서 계�
 
 ## 다음 PM 작업
 
-1. GitHub Issue #1, #4~#7 및 Project board 상태를 실제 merge 이력에 맞게 정리
-2. Issue #7 잔여 범위: auth state/API client/token refresh/protected route를 micro task로 분해
-3. Issue #8 Question constants/API client fake contract
-4. Issue #9 Admin Question list/filter UI 및 backend 실제 연동
-5. Issue #3 문서 계약 정리 후 Issue #10 통합 QA
+1. PR #28 사용자 승인·merge 대기
+2. merge 후 최신 main Compose에서 관리자 Question 생성 실제 연동 QA
+3. Issue #10 체크리스트 기반 backend/frontend/security/Compose 최종 QA
+4. Phase 1 종료 보고 후 Phase 2 범위 제안 및 사용자 승인 대기
