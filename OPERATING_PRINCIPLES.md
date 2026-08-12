@@ -175,7 +175,7 @@ Taekmin approved automated orchestration on 2026-08-10:
 
 - A user LaunchAgent keeps the authenticated Claude bridge running outside the Codex sandbox.
 - Codex writes bounded prompts to the bridge queue and reviews result, exit status, git diff, and test reports.
-- A Codex heartbeat checks active work every five minutes and continues only already-approved PHASE backlog.
+- A Codex heartbeat checks active work every 30 minutes and continues only already-approved PHASE backlog.
 - The same heartbeat performs the daily PM close once after 23:45 KST.
 - Automation must remain silent when state has not meaningfully changed.
 - Automation may not merge to main, force-push, start a new PHASE, or cross an approval gate.
