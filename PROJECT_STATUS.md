@@ -1,22 +1,20 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-12 23:50 KST
+Last updated: 2026-08-13 15:28 KST
 
 ## 현재 PHASE
 
-PHASE 1 마감 단계입니다. Question backend, 실제 관리자 로그인, Question API 계약과 목록 UI, 문서 계약, full-stack Compose가 `main`에 반영됐습니다. 관리자 전용 Question 생성 UI는 draft PR #28에서 사용자 승인·merge를 기다립니다.
-
-PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Issue #10 최종 QA를 수행하면 Phase 1 종료 판정이 가능합니다.
+PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 목록·생성·상세 UI, 역할 기반 접근 제어, 문서 계약, full-stack Compose가 `main`에 반영됐습니다. Issue #10 최종 QA는 독립 리뷰 GO 판정 후 종료했습니다.
 
 추정 진행률:
 
-- PHASE 1: 약 90~95%
+- PHASE 1: 100%
 - 전체 MVP: 약 40%
 
 ## 기준선 및 실행 상태
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
-- `origin/main`: `3638799` (PR #27 Question 목록·필터 merge)
+- `origin/main`: `6600faf` (PR #31 Question 내용 상세 링크 UX merge)
 - Local main: `origin/main`과 동기화, ignored `.env`와 보존 대상 `data/` 사용
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
 - PM log remote: `https://github.com/taekminKwon/ewha-grmr-pm`
@@ -47,10 +45,10 @@ PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Iss
 - #25 Question API 계약·fixture — `b6264b1`
 - #26 PostgreSQL Question ID 생성 정합화 — `4b3dc58`
 - #27 관리자 Question 목록·필터 — `3638799`
-
-### 승인 대기
-
-- #28 관리자 전용 Question 생성 UI — draft, mergeable
+- #28 관리자 전용 Question 생성 UI — `32828fc`
+- #29 Redis 통합 테스트 컨텍스트 보정 — `82728f8`
+- #30 관리자 Question 상세 조회 UI — `dc6c05b`
+- #31 Question 내용 상세 링크 UX — `6600faf`
 
 ### Stacked branch 반영
 
@@ -70,7 +68,10 @@ PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Iss
 - Question API contract/fixture: frontend 55/55 tests, build/lint PASS
 - Question 목록 UI: frontend 67/67 tests, build/lint PASS
 - Question 생성·역할 검사: frontend 85/85 tests, build/lint PASS
+- Question 상세·링크 UX: frontend 97/97 tests, build/lint PASS
 - PostgreSQL Flyway ID 생성 통합 테스트 PASS
+- Redis Testcontainers integration: 4/4 PASS
+- 최신 Compose 실동작: login 200, create 201, list/detail API 200, list/create/detail SPA 200
 
 ## 구현 현황
 
@@ -79,7 +80,7 @@ PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Iss
 - 문서 계약: GPT 응답, StudyRecord type, 단일 세션, 객관식-only MVP 반영
 - Frontend 기반 및 실제 로그인·세션·보호 라우트 완료
 - Question 목록·필터·페이지네이션 완료 및 main 반영
-- Question 생성 UI와 ADMIN/STUDENT 렌더링 권한 검사 완료, PR #28 승인 대기
+- Question 생성·상세 UI와 ADMIN/STUDENT 렌더링 권한 검사 완료 및 main 반영
 - Local infra: PostgreSQL·Redis 완료
 - Backend Compose: 완료 및 main 반영
 - Frontend Nginx Compose: main 반영 및 실제 full-stack 재검증 완료
@@ -88,7 +89,7 @@ PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Iss
 
 - 실제 GPT key가 없어 외부 integration test는 분리 대기입니다.
 - Backend enum/API는 미래 문제 유형도 표현하지만 Phase 1 frontend는 객관식만 노출합니다.
-- 기존 Redis refresh-token integration test의 Spring Security test context 오류는 별도 후속 보정 후보입니다.
+- 인증 문서는 `TOKEN_EXPIRED`를 언급하지만 현재 entry point는 모든 401에 `TOKEN_INVALID`를 반환합니다. Phase 1 frontend는 HTTP 401로 처리해 기능 영향은 없습니다.
 - Compose의 고정 `container_name` 때문에 프로젝트 이름을 다르게 실행하면 충돌합니다. 현재는 `-p infra-compose`를 사용합니다.
 - 예약 heartbeat에서 Codex 모델 capacity 오류가 간헐적으로 발생하지만 Claude bridge와 수동 실행은 정상입니다.
 - PR #19의 stacked-base 문제는 main 전달용 PR #20 merge로 해결됐습니다.
@@ -97,8 +98,8 @@ PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Iss
 
 - Milestone: `PHASE 1 - Question Vertical Slice`
 - Project: `https://github.com/users/taekminKwon/projects/1`
-- Issues #1~#9: CLOSED
-- 남은 공식 Phase 1 backlog: #10 통합 QA
+- Issues #1~#10: CLOSED
+- Phase 1 independent QA: GO, P0/P1 없음
 - 새 Phase와 Phase 2 범위는 Phase 1 종료 후 사용자 승인 전 시작하지 않음
 
 ## 운영 제약
@@ -110,7 +111,6 @@ PR #28 반영 후 최신 main Compose에서 생성 실동작을 확인하고 Iss
 
 ## 다음 PM 작업
 
-1. PR #28 사용자 승인·merge 대기
-2. merge 후 최신 main Compose에서 관리자 Question 생성 실제 연동 QA
-3. Issue #10 체크리스트 기반 backend/frontend/security/Compose 최종 QA
-4. Phase 1 종료 보고 후 Phase 2 범위 제안 및 사용자 승인 대기
+1. Phase 1 완료 보고 및 기준선 보존
+2. `TOKEN_EXPIRED`/`TOKEN_INVALID` 문서 계약 정리(P3)
+3. Phase 2 범위 제안 후 사용자 승인 대기
