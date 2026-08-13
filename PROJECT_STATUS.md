@@ -1,20 +1,21 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-13 15:28 KST
+Last updated: 2026-08-14 01:02 KST
 
 ## 현재 PHASE
 
-PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 목록·생성·상세 UI, 역할 기반 접근 제어, 문서 계약, full-stack Compose가 `main`에 반영됐습니다. Issue #10 최종 QA는 독립 리뷰 GO 판정 후 종료했습니다.
+PHASE 1 완료 후 PHASE 2 Student Practice MVP를 진행 중입니다. 학생 역할 shell, local STUDENT 계정, StudyRecord snapshot 도메인이 main에 반영됐고, 자유 학습 문제 조회→제출→채점→기록 생성→즉시 결과 UI vertical slice는 draft PR #45에서 검토 대기 중입니다.
 
 추정 진행률:
 
 - PHASE 1: 100%
-- 전체 MVP: 약 40%
+- PHASE 2: 약 55~60%
+- 전체 MVP: 약 60%
 
 ## 기준선 및 실행 상태
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
-- `origin/main`: `6600faf` (PR #31 Question 내용 상세 링크 UX merge)
+- `origin/main`: `360d297` (PR #44 local STUDENT account merge)
 - Local main: `origin/main`과 동기화, ignored `.env`와 보존 대상 `data/` 사용
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
 - PM log remote: `https://github.com/taekminKwon/ewha-grmr-pm`
@@ -49,6 +50,14 @@ PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 
 - #29 Redis 통합 테스트 컨텍스트 보정 — `82728f8`
 - #30 관리자 Question 상세 조회 UI — `dc6c05b`
 - #31 Question 내용 상세 링크 UX — `6600faf`
+- #41 Phase 2 학생 자유 학습·StudyRecord 계약 — `e09bff8`
+- #42 StudyRecord migration·불변 snapshot 도메인 — `8713877`
+- #43 ADMIN/STUDENT 역할별 shell — `5a3ba6f`
+- #44 local STUDENT test account — `360d297`
+
+### 승인 대기
+
+- #45 학생 자유 학습·채점 vertical slice — draft
 
 ### Stacked branch 반영
 
@@ -72,6 +81,9 @@ PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 
 - PostgreSQL Flyway ID 생성 통합 테스트 PASS
 - Redis Testcontainers integration: 4/4 PASS
 - 최신 Compose 실동작: login 200, create 201, list/detail API 200, list/create/detail SPA 200
+- PR B frontend 165/165 tests, build/lint PASS
+- PR B backend default/PostgreSQL/Redis tests PASS
+- PR B Compose 학생 E2E: student login, next question, answer submission, StudyRecord creation, practice UI PASS
 
 ## 구현 현황
 
@@ -84,6 +96,8 @@ PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 
 - Local infra: PostgreSQL·Redis 완료
 - Backend Compose: 완료 및 main 반영
 - Frontend Nginx Compose: main 반영 및 실제 full-stack 재검증 완료
+- StudyRecord snapshot domain/migration 및 학생 역할 shell·local 계정 main 반영
+- 학생 자유 학습·채점 vertical slice 구현 완료, PR #45 승인 대기
 
 ## 알려진 리스크 / 드리프트
 
@@ -96,11 +110,11 @@ PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 
 
 ## GitHub 작업 추적
 
-- Milestone: `PHASE 1 - Question Vertical Slice`
+- Milestones: `PHASE 1 - Question Vertical Slice` 완료, `PHASE 2 - Student Practice MVP` 진행
 - Project: `https://github.com/users/taekminKwon/projects/1`
 - Issues #1~#10: CLOSED
 - Phase 1 independent QA: GO, P0/P1 없음
-- 새 Phase와 Phase 2 범위는 Phase 1 종료 후 사용자 승인 전 시작하지 않음
+- Phase 2 Issues #32~#40 추적 중; #32~#35 및 #38 일부가 PR #41~#45로 진행됨
 
 ## 운영 제약
 
@@ -111,6 +125,6 @@ PHASE 1 완료입니다. Question backend, 실제 관리자 로그인, Question 
 
 ## 다음 PM 작업
 
-1. Phase 1 완료 보고 및 기준선 보존
-2. `TOKEN_EXPIRED`/`TOKEN_INVALID` 문서 계약 정리(P3)
-3. Phase 2 범위 제안 후 사용자 승인 대기
+1. PR #45 사용자 승인·merge 대기
+2. merge 후 PR C 내 학습 이력 목록·상세 backend/frontend vertical slice
+3. PR D 권한·Compose 통합 QA와 `TOKEN_EXPIRED` 문서 drift 정리
