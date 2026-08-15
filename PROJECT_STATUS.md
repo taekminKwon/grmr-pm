@@ -1,16 +1,16 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-15 23:58 KST
+Last updated: 2026-08-16 03:59 KST
 
 ## 현재 PHASE
 
-PHASE 1 Question Vertical Slice와 PHASE 2 Student Practice MVP가 완료됐고, 사용자 승인에 따라 PHASE 3 Assignment MVP를 시작했습니다. 현재 PR A 계약 정합화 결과를 검토 중입니다.
+PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. PR A 계약 draft PR #53을 열었고, PR B 관리자 과제 관리의 backend/frontend 기반 커밋을 완료했습니다. 현재 Claude 월간 사용 한도로 중단 상태입니다.
 
 추정 진행률:
 
 - PHASE 1: 100%
 - PHASE 2: 100%
-- PHASE 3: 약 5%
+- PHASE 3: 약 15%
 - 현재 문서화된 전체 MVP: 약 70%
 
 ## 기준선 및 실행 상태
@@ -19,7 +19,7 @@ PHASE 1 Question Vertical Slice와 PHASE 2 Student Practice MVP가 완료됐고,
 - `origin/main`: `d2b8f51` (PR #48 merge)
 - Local main: origin/main과 동기화
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
-- Backend Claude bridge: Phase 3 계약 task `20260815-233914` DONE, PM 검토 중
+- Backend/Frontend Claude bridge: task `20260816-033033` monthly spend limit, 추가 배정 중단
 - Local Compose: frontend/backend/PostgreSQL/Redis healthy
 - Frontend: `http://localhost`
 - Backend: `http://localhost:8080`
@@ -51,8 +51,8 @@ PHASE 1 Question Vertical Slice와 PHASE 2 Student Practice MVP가 완료됐고,
 - 실제 GPT key가 없어 외부 integration test는 별도 profile로 보류함.
 - 서버 로그아웃 refresh token 폐기는 refresh token 저장/cookie 정책 결정이 필요함.
 - 자유 학습 무작위 문제 조회는 후보 전체 로딩 방식이라 데이터 증가 시 최적화가 필요함.
-- 문서에는 Assignment, 관리자 학생/학습현황, 대시보드, 오답노트가 정의돼 있지만 구현되지 않음.
-- Phase 3 계약에서 `startDate`/`예정` 상태와 과제 답안 임시 저장 포함 여부를 제품 결정해야 함.
+- Assignment는 계약과 기반 구현까지 진행됐지만 관리자/학생 vertical slice는 아직 미완료임.
+- 관리자 학생/학습현황, 대시보드, 오답노트는 아직 구현되지 않음.
 
 ## 운영 제약
 
@@ -64,7 +64,6 @@ PHASE 1 Question Vertical Slice와 PHASE 2 Student Practice MVP가 완료됐고,
 
 ## 다음 PM 작업
 
-1. Phase 3 계약의 `예정` 상태/startDate와 임시 저장 포함 여부 확인
-2. 결정 반영 후 PR A docs diff 재검토·commit·draft PR 생성
-3. PR B 관리자 과제 관리 vertical slice 시작
-4. refresh token 저장·폐기 정책은 별도 보안 결정으로 유지
+1. Claude limit 해제 후 backend Assignment 목록·상세 read layer 재개
+2. frontend 관리자 과제 목록 UI 재개
+3. PR B 관리자 과제 관리 vertical slice 완성 후 PR C/D 진행
