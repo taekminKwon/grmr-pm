@@ -1,16 +1,16 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-16 03:59 KST
+Last updated: 2026-08-16 12:30 KST
 
 ## 현재 PHASE
 
-PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. PR A 계약 draft PR #53을 열었고, PR B 관리자 과제 관리의 backend/frontend 기반 커밋을 완료했습니다. 현재 Claude 월간 사용 한도로 중단 상태입니다.
+PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. PR A 계약 draft PR #53을 열었고, PR B 관리자 과제 관리의 backend read/search와 frontend 목록 UI까지 완료했습니다.
 
 추정 진행률:
 
 - PHASE 1: 100%
 - PHASE 2: 100%
-- PHASE 3: 약 15%
+- PHASE 3: 약 25%
 - 현재 문서화된 전체 MVP: 약 70%
 
 ## 기준선 및 실행 상태
@@ -19,7 +19,7 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 - `origin/main`: `d2b8f51` (PR #48 merge)
 - Local main: origin/main과 동기화
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
-- Backend/Frontend Claude bridge: task `20260816-033033` monthly spend limit, 추가 배정 중단
+- Backend/Frontend Claude bridge: 인증 세션 복구 후 정상 실행 중
 - Local Compose: frontend/backend/PostgreSQL/Redis healthy
 - Frontend: `http://localhost`
 - Backend: `http://localhost:8080`
@@ -64,6 +64,7 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 
 ## 다음 PM 작업
 
-1. Claude limit 해제 후 backend Assignment 목록·상세 read layer 재개
-2. frontend 관리자 과제 목록 UI 재개
-3. PR B 관리자 과제 관리 vertical slice 완성 후 PR C/D 진행
+1. Backend Assignment 목록·상세 HTTP endpoints
+2. Frontend 관리자 과제 상세 UI
+3. 관리자 create/update/delete와 생성·수정 UI
+4. PR B vertical slice 완성 후 PR C/D 진행
