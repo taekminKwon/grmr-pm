@@ -1,25 +1,25 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-16 12:30 KST
+Last updated: 2026-08-18 00:33 KST
 
 ## 현재 PHASE
 
-PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. PR A 계약 draft PR #53을 열었고, PR B 관리자 과제 관리의 backend read/search와 frontend 목록 UI까지 완료했습니다.
+PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. 계약 PR #53과 관리자 과제 PR #54는 merge됐으며, 학생 과제 CBT vertical slice draft PR #55가 승인 대기 중입니다.
 
 추정 진행률:
 
 - PHASE 1: 100%
 - PHASE 2: 100%
-- PHASE 3: 약 25%
-- 현재 문서화된 전체 MVP: 약 70%
+- PHASE 3: 약 75%
+- 현재 문서화된 전체 MVP: 약 85%
 
 ## 기준선 및 실행 상태
 
 - Target project: `/Users/taekmin/Desktop/ewha-grmr`
-- `origin/main`: `d2b8f51` (PR #48 merge)
+- `origin/main`: `809f1e0` (Phase 3 계약·관리자 과제 merge 반영)
 - Local main: origin/main과 동기화
 - PM log repository: `/Users/taekmin/Desktop/ewha-grmr-pm-log`
-- Backend/Frontend Claude bridge: 인증 세션 복구 후 정상 실행 중
+- Backend/Frontend Claude bridge: Pro 인증 및 최소 호출 정상, 대기 중
 - Local Compose: frontend/backend/PostgreSQL/Redis healthy
 - Frontend: `http://localhost`
 - Backend: `http://localhost:8080`
@@ -36,12 +36,15 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 - PostgreSQL·Redis·backend·Nginx frontend Docker Compose
 - repository-owned 안전한 로컬 배포 스크립트
 - Phase 2 통합 QA 및 공통 인증/오류 응답 안정화
+- Phase 3 과제 계약, 관리자 과제 생성·조회·수정·삭제 vertical slice
+- 학생 과제 목록·문제 조회, PostgreSQL 답안 임시 저장, CBT 최종 제출·원자 채점
+- 과제별 immutable StudyRecord 스냅샷과 제출 결과 조회
+- 학생 과제 목록·CBT 풀이·결과 React UI
 
 ## 최종 검증
 
-- Backend default suite: 212/212 PASS
-- PostgreSQL/Flyway integration suite: PASS
-- Frontend: 222/222 tests, build, lint PASS
+- Backend default suite 및 PostgreSQL/Flyway integration suite: PASS
+- Frontend: 471/471 tests, build, lint PASS on PR #55 integration branch
 - Latest main Compose health/smoke: PASS
 - Phase 2 Issues #32~#40: 모두 CLOSED
 - Phase 2 milestone: CLOSED
@@ -51,7 +54,8 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 - 실제 GPT key가 없어 외부 integration test는 별도 profile로 보류함.
 - 서버 로그아웃 refresh token 폐기는 refresh token 저장/cookie 정책 결정이 필요함.
 - 자유 학습 무작위 문제 조회는 후보 전체 로딩 방식이라 데이터 증가 시 최적화가 필요함.
-- Assignment는 계약과 기반 구현까지 진행됐지만 관리자/학생 vertical slice는 아직 미완료임.
+- 학생 과제 PR #55는 draft/OPEN/CLEAN이며 사용자 승인·merge 전임.
+- Phase 3 통합 QA·안정화 PR D는 PR #55 merge 후 최신 main에서 시작해야 함.
 - 관리자 학생/학습현황, 대시보드, 오답노트는 아직 구현되지 않음.
 
 ## 운영 제약
@@ -64,7 +68,7 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 
 ## 다음 PM 작업
 
-1. Backend Assignment 목록·상세 HTTP endpoints
-2. Frontend 관리자 과제 상세 UI
-3. 관리자 create/update/delete와 생성·수정 UI
-4. PR B vertical slice 완성 후 PR C/D 진행
+1. Draft PR #55 사용자 검토·merge
+2. merge 후 최신 main 동기화 및 repository-owned script 로컬 배포
+3. Phase 3 PR D 통합 QA·안정화
+4. Phase 3 마감 검증과 상태 문서 갱신
