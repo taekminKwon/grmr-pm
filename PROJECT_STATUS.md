@@ -1,17 +1,17 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-18 01:16 KST
+Last updated: 2026-08-18 01:35 KST
 
 ## 현재 PHASE
 
-PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. 계약 PR #53, 관리자 과제 PR #54, 학생 과제 CBT PR #55가 merge됐으며 PR D 통합 QA·안정화를 진행 중입니다.
+PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다. 계약 PR #53, 관리자 과제 PR #54, 학생 과제 CBT PR #55가 merge됐으며 통합 QA·안정화 draft PR #56이 승인 대기 중입니다.
 
 추정 진행률:
 
 - PHASE 1: 100%
 - PHASE 2: 100%
-- PHASE 3: 약 85%
-- 현재 문서화된 전체 MVP: 약 90%
+- PHASE 3: 약 95%
+- 현재 문서화된 전체 MVP: 약 95%
 
 ## 기준선 및 실행 상태
 
@@ -54,7 +54,7 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 - 실제 GPT key가 없어 외부 integration test는 별도 profile로 보류함.
 - 서버 로그아웃 refresh token 폐기는 refresh token 저장/cookie 정책 결정이 필요함.
 - 자유 학습 무작위 문제 조회는 후보 전체 로딩 방식이라 데이터 증가 시 최적화가 필요함.
-- Phase 3 통합 QA·안정화 PR D가 최신 main 기반으로 진행 중임.
+- Phase 3 통합 QA·안정화 PR #56은 draft/OPEN이며 사용자 승인·merge 전임.
 - 관리자 학생/학습현황, 대시보드, 오답노트는 아직 구현되지 않음.
 
 ## 운영 제약
@@ -67,7 +67,7 @@ PHASE 1과 PHASE 2가 완료됐고 PHASE 3 Assignment MVP를 진행 중입니다
 
 ## 다음 PM 작업
 
-1. Phase 3 PR D backend/frontend 병렬 audit 결과 검토
-2. 재현된 결함의 최소 보정·회귀 테스트·작은 커밋 누적
-3. 전체 통합 검증 후 draft PR 생성 및 사용자 승인 요청
-4. Phase 3 마감 검증과 상태 문서 갱신
+1. Draft PR #56 사용자 검토·merge
+2. merge 후 최신 main 동기화 및 최종 로컬 배포
+3. Phase 3 마감 검증·issue/milestone 정리
+4. 다음 Phase 범위 확인
