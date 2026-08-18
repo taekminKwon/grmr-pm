@@ -1,17 +1,18 @@
 # ewha-grmr 프로젝트 상태
 
-Last updated: 2026-08-18 12:12 KST
+Last updated: 2026-08-18 15:41 KST
 
 ## 현재 PHASE
 
-PHASE 1, PHASE 2, PHASE 3 Assignment MVP가 완료됐습니다. Phase 3 PR #53~#56이 모두 main에 merge됐고 milestone도 4/4 issues CLOSED 상태로 종료했습니다.
+PHASE 1, PHASE 2, PHASE 3가 완료됐고 PHASE 4 Learning Analytics & Dashboards를 시작했습니다. PR A 학습 분석 계약을 진행 중입니다.
 
 추정 진행률:
 
 - PHASE 1: 100%
 - PHASE 2: 100%
 - PHASE 3: 100%
-- 현재 문서화된 전체 MVP: 100%
+- PHASE 4: 시작
+- 현재 승인된 Phase 4 포함 전체 범위: 약 75%
 
 ## 기준선 및 실행 상태
 
@@ -69,7 +70,7 @@ PHASE 1, PHASE 2, PHASE 3 Assignment MVP가 완료됐습니다. Phase 3 PR #53~#
 
 ## 다음 PM 작업
 
-1. 다음 Phase 또는 추가 제품 범위 사용자 확인
-2. 권장 다음 범위: 학생 관리·학습 이력 rollup과 관리자/학생 대시보드
-3. 오답노트는 dashboard 집계 기반 다음 Phase로 분리
-4. 관리자 과제 목록 N+1 집계는 실제 규모 문제가 관찰될 때 batching 검토
+1. PR A 학습 분석·대시보드 상세 계약 검토 및 draft PR
+2. PR A merge 후 관리자 학생 관리·학습 이력 vertical slice
+3. 학생/관리자 대시보드 vertical slice
+4. Phase 4 통합 QA·안정화
