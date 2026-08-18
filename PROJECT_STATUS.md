@@ -56,7 +56,7 @@ PHASE 1, PHASE 2, PHASE 3 Assignment MVP가 완료됐습니다. Phase 3 PR #53~#
 - 실제 GPT key가 없어 외부 integration test는 별도 profile로 보류함.
 - 서버 로그아웃 refresh token 폐기는 refresh token 저장/cookie 정책 결정이 필요함.
 - 자유 학습 무작위 문제 조회는 후보 전체 로딩 방식이라 데이터 증가 시 최적화가 필요함.
-- 로컬 학생 계정 환경변수 3개가 미설정이라 학생 로그인 기반 HTTP smoke는 별도 계정 설정이 필요함.
+- 로컬 학생 계정 환경변수 설정 및 STUDENT 로그인/token 발급 smoke 완료.
 - 관리자 학생/학습현황, 대시보드, 오답노트는 아직 구현되지 않음.
 
 ## 운영 제약
@@ -70,5 +70,6 @@ PHASE 1, PHASE 2, PHASE 3 Assignment MVP가 완료됐습니다. Phase 3 PR #53~#
 ## 다음 PM 작업
 
 1. 다음 Phase 또는 추가 제품 범위 사용자 확인
-2. 필요 시 로컬 학생 계정 환경변수 설정 후 수동 UI smoke
-3. 관리자 과제 목록 N+1 집계는 실제 규모 문제가 관찰될 때 batching 검토
+2. 권장 다음 범위: 학생 관리·학습 이력 rollup과 관리자/학생 대시보드
+3. 오답노트는 dashboard 집계 기반 다음 Phase로 분리
+4. 관리자 과제 목록 N+1 집계는 실제 규모 문제가 관찰될 때 batching 검토
